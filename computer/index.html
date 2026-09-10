@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>最早的起源和發明小站</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:#eaf3e0;min-height:100vh;color:#4a3b2a}
+#layout{display:flex;min-height:100vh;max-width:1100px;margin:0 auto}
+#sidebar{width:230px;min-width:230px;background:linear-gradient(180deg,#fdf8ec,#fefbf2);border-right:3px solid #e8dcbc;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+#sidebar .site{text-align:center;font-size:13px;color:#a0845a;font-weight:bold;margin-bottom:8px;line-height:1.4}
+#sidebar .back{display:block;text-align:center;font-size:12px;color:#b09a80;text-decoration:none;margin-top:auto;padding:8px}
+#main{flex:1;padding:18px 22px;min-width:0}
+h2{color:#c8860a;font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:3px dashed #f0d9b5}
+.player{background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(0,0,0,.12);overflow:hidden}
+.stage{position:relative;background:#f6efe0;aspect-ratio:16/9;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.dots{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:5}
+.dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.6);box-shadow:0 0 3px rgba(0,0,0,.25);transition:all .2s;cursor:pointer}
+.dots i.on{background:#ffd98a;transform:scale(1.3)}
+.subtitle{background:#4a5a3a;color:#fff;padding:10px 18px;font-size:16.5px;line-height:1.6;text-align:center;letter-spacing:.5px;min-height:46px}
+.ctrl{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fffdf6}
+.ctrl button{background:#ffb347;border:none;color:#fff;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 3px 0 #d96f00;transition:transform .1s;flex:none}
+.ctrl button.navbtn{width:40px;height:40px;padding:0;font-size:17px;background:#ffcf8a;color:#a5682a;box-shadow:0 3px 0 #d9a45a}
+.ctrl button:active{transform:translateY(2px);box-shadow:0 1px 0 #d96f00}
+.ctrl .plabel{flex:none;font-size:13px;color:#8a6a4a;text-align:right;padding-left:10px;white-space:nowrap}
+.seek{flex:1;height:6px;background:#f0e2c8;border-radius:3px;overflow:hidden;cursor:pointer;touch-action:none}
+.seek div{height:100%;width:0%;background:linear-gradient(90deg,#ffb347,#ff8c1a);transition:width .2s}
+.fact{background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 3px 12px rgba(0,0,0,.06);line-height:1.9;font-size:15px;margin-top:12px}
+.fact b{color:#e07b00}
+@media (max-width:720px){
+ #layout{flex-direction:column}
+ #sidebar{width:100%;min-width:0;height:auto;position:static;border-right:none;border-bottom:3px solid #f0d9b5;padding:10px}
+ #main{padding:12px}
+ .subtitle{font-size:14px;padding:8px 12px;min-height:46px}
+}
+</style>
+</head>
+<body>
+<div id="layout">
+  <aside id="sidebar">
+    <div class="site">知識補給站<br>最早的起源和發明</div>
+    <a class="back" href="../">← 回最早的起源和發明</a>
+  </aside>
+  <main id="main">
+    <h2>最早的起源和發明：電腦與晶片的故事</h2>
+    <div class="player">
+      <div class="stage"><canvas id="cv"></canvas><div class="dots" id="dots"></div></div>
+      <div class="subtitle" id="sub">▶ 按播放，聽故事！</div>
+      <div class="ctrl">
+        <button class="navbtn" onclick="prevScene()">◀◀</button>
+        <button id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="navbtn" onclick="nextScene()">▶▶</button>
+        <button class="navbtn" onclick="restart()" style="background:#b8c4ce;box-shadow:0 3px 0 #8a98a3">↺</button>
+        <div class="seek"><div id="seekBar"></div></div>
+        <div class="plabel" id="sceneLabel">1 / 9</div>
+      </div>
+    </div>
+    <div class="fact"><b>小知識</b>：「電腦」最早指的不是機器，而是<b>一群負責計算的人</b>；後來才有機械電腦、真空管電腦，最後發明了<b>晶片</b>，讓電腦越來越小、越來越快。</div>
+  </main>
+</div>
+<script>
+const SCENES=[
+ {img:'img/s1.jpg',sub:['嗨！','大家好！','我是電腦','你有沒有想過','我是怎麼來的呀？','關於這個問題','要從 1946 年開始說起']},
+ {img:'img/s2.jpg',sub:['很久很久以前','電腦是一群人的工作','他們負責算數學','幫軍隊算砲彈飛到哪','也幫天文學家算星星的位置','這樣一群人','就被叫做「電腦」']},
+ {img:'img/s3.jpg',sub:['後來有一位英國數學家','叫做巴比奇','他想用齒輪來算數學','設計了「分析機」','裡面已經有「程式」的想法','是現代電腦的老祖先']},
+ {img:'img/s4.jpg',sub:['第二次世界大戰的時候','大家需要更快的計算','科學家開始用「電」來算','1946 年美國做出 ENIAC','它用了好多真空管','大到要一整間房間！']},
+ {img:'img/s5.jpg',sub:['可是電腦要算的資料越來越多','就需要更多的開關','開關從「繼電器」變成「真空管」','再變成小小的「電晶體」','開關越小','電腦就越小越快']},
+ {img:'img/s6.jpg',sub:['科學家基爾比想到','把零件都做在同一塊半導體上','科學家諾伊斯想到','用不導電的材料隔開導線','讓電路變成立體的','就這樣，晶片誕生了！']},
+ {img:'img/s7.jpg',sub:['晶片是用「矽晶圓」做的','科學家用薄膜、微影、蝕刻','一層一層蓋上去','一整顆晶片有十幾層喔！']},
+ {img:'img/s8.jpg',sub:['現在一顆小小的晶片','裡面有幾百億個電晶體','而且裡面的導線','加起來超過一百公里！']},
+ {img:'img/s9.jpg',sub:['從「人」到「機械」','再到「電子」和「晶片」','一代一代變快、變小','你手上的手機','比當年的電腦厲害好多好多倍！','這就是「最早的起源和發明」']},
+];
+let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3';}), img:s.img};});
+const HOLD=6;               // 每句最長秒數
+const imgs=[];              // 預載圖片
+AUDIO.forEach((s,i)=>{const im=new Image(); im.src=s.img; imgs[i]=im;});
+AUDIO.forEach(s=>s.vf.forEach(f=>{const a=new Audio(); a.preload='auto'; a.src=f;}));
+let scene=0,playing=false,audio=null,sceneT0=0,sentIdx=0,sentT0=0;
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W,H,dpr;
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();
+ W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+window.addEventListener('resize',resize);resize();
+
+function drawCover(im,zoom){
+ ctx.clearRect(0,0,W,H);
+ ctx.fillStyle='#f6efe0';ctx.fillRect(0,0,W,H);
+ if(!im||!im.complete||!im.naturalWidth) return;
+ const s=Math.max(W/im.naturalWidth,H/im.naturalHeight)*zoom;
+ const w=im.naturalWidth*s,h=im.naturalHeight*s;
+ ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);
+}
+function drawScene(n,t){
+ drawCover(imgs[n], 1.0+Math.min(0.06,t*0.01));
+ // 底部漸層，讓字幕區更清楚
+ const g=ctx.createLinearGradient(0,H*0.72,0,H);
+ g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.18)');
+ ctx.fillStyle=g;ctx.fillRect(0,H*0.72,W,H*0.28);
+}
+const dotsBox=document.getElementById('dots');
+AUDIO.forEach((_,i)=>{const d=document.createElement('i');d.title='第 '+(i+1)+' 幕';d.addEventListener('click',()=>playScene(i));dotsBox.appendChild(d);});
+
+function setScene(i){
+ scene=i;
+ document.querySelectorAll('#dots i').forEach((d,k)=>d.classList.toggle('on',k===i));
+ document.getElementById('sceneLabel').textContent=(i+1)+' / '+AUDIO.length;
+ document.getElementById('sub').textContent=(AUDIO[i].sub?AUDIO[i].sub[0]:'');
+ sceneT0=performance.now();
+}
+function stopAudio(){ if(audio){audio.pause();audio=null;} if(window._sentTimer){clearTimeout(window._sentTimer);window._sentTimer=null;} }
+function playScene(i){
+ setScene(i); stopAudio(); sentIdx=0; sentT0=performance.now();
+ const sents=AUDIO[i].sub||[], vfs=AUDIO[i].vf||[];
+ if(AUDIO[i+1]){ (AUDIO[i+1].vf||[]).forEach(f=>{const p=new Audio(f);p.preload='auto';}); }
+ function step(){
+  if(!playing) return;
+  sentT0=performance.now();
+  const myIdx=sentIdx;
+  const show=()=>{document.getElementById('sub').textContent=sents[myIdx]||'';};
+  const goNext=()=>{
+   if(sentIdx!==myIdx) return;
+   if(window._sentTimer){clearTimeout(window._sentTimer);window._sentTimer=null;}
+   if(audio){try{audio.onended=null;audio.pause();}catch(e){}}
+   sentIdx++;
+   if(sentIdx<sents.length){step();}
+   else if(scene<AUDIO.length-1){playScene(scene+1);}
+   else{playing=false;document.getElementById('playBtn').textContent='▶';}
+  };
+  if(vfs[myIdx]){
+   audio=new Audio(vfs[myIdx]);
+   audio.onended=()=>{if(sentIdx===myIdx&&playing)goNext();};
+   const startTimer=()=>{window._sentTimer=setTimeout(()=>{if(sentIdx===myIdx&&playing)goNext();},HOLD*1000);};
+   audio.onplaying=startTimer;
+   const guard=setTimeout(()=>{if(sentIdx===myIdx&&playing&&audio&&audio.paused&&audio.currentTime===0){show();goNext();}},4500);
+   audio.play().then(()=>{clearTimeout(guard);show();if(audio&&!audio.paused)startTimer();})
+        .catch(()=>{clearTimeout(guard);show();window._sentTimer=setTimeout(goNext,3000);});
+  }else{ show(); window._sentTimer=setTimeout(goNext,4000); }
+  for(let pk=1;pk<=3;pk++){ if(vfs[myIdx+pk]){const pa=new Audio(vfs[myIdx+pk]);pa.preload='auto';} }
+ }
+ step(); playing=true; document.getElementById('playBtn').textContent='⏸';
+}
+function togglePlay(){
+ if(playing){stopAudio();playing=false;document.getElementById('playBtn').textContent='▶';}
+ else{ if(audio&&audio.currentTime>0&&audio.duration&&audio.currentTime<audio.duration){audio.play();playing=true;document.getElementById('playBtn').textContent='⏸';}
+       else playScene(scene||0); }
+}
+function restart(){stopAudio();playScene(0);}
+function prevScene(){stopAudio();if(scene>0)playScene(scene-1);else{sceneT0=performance.now();playing=false;document.getElementById('playBtn').textContent='▶';document.getElementById('seekBar').style.width='0%';}}
+function nextScene(){stopAudio();if(scene<AUDIO.length-1)playScene(scene+1);}
+const seekEl=document.querySelector('.seek');
+seekEl.addEventListener('pointerdown',e=>{const r=seekEl.getBoundingClientRect();const ratio=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));playScene(Math.min(AUDIO.length-1,Math.max(0,Math.floor(ratio*AUDIO.length))));});
+
+function loop(){
+ requestAnimationFrame(loop);
+ if(playing){
+  const total=AUDIO.length,seg=1/total;
+  let p=scene/total;
+  const sc=AUDIO[scene]||{},nS=(sc.sub?sc.sub.length:1);
+  let inner;
+  if(audio&&audio.duration&&audio.duration>0){inner=(sentIdx+Math.min(1,audio.currentTime/audio.duration))/nS;}
+  else{inner=(sentIdx+Math.min(1,(performance.now()-sentT0)/1000/HOLD))/nS;}
+  p+=seg*Math.min(1,inner);
+  document.getElementById('seekBar').style.width=(p*100)+'%';
+ }
+ const t=(performance.now()-sceneT0)/1000;
+ drawScene(scene,t);
+}
+sceneT0=performance.now();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
