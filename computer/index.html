@@ -71,7 +71,7 @@ const SCENES=[
  {img:'img/s8.jpg',sub:['2020 年代','一顆小小的晶片','裡面有幾百億個電晶體','而且裡面的導線','加起來超過一百公里！']},
  {img:'img/s9.jpg',sub:['從「人」到「機械」','再到「電子」與「晶片」','一代一代變快、變小','你手上的手機','比當年的電腦厲害好多好多倍！','這就是電腦最早的起源與發明']},
 ];
-const VER='?v=20260911e';   // 換檔內容不換檔名時，用版本號避開快取
+const VER='?v=20260911f';   // 換檔內容不換檔名時，用版本號避開快取
 let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3'+VER;}), img:s.img+VER};});
 const HOLD=6;               // 每句最長秒數
 const imgs=[];              // 預載圖片
