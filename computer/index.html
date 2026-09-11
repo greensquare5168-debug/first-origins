@@ -73,7 +73,7 @@ const SCENES=[
  {img:'img/s8.jpg',sub:['2020 年代','一顆小小的晶片','裡面有幾百億個電晶體','而且裡面的導線','加起來超過一百公里！']},
  {img:'img/s9.jpg',sub:['從「人」到「機械」','再到「電子」與「晶片」','一代一代變快、變小','你手上的手機','比當年的電腦厲害好多好多倍！','這就是電腦最早的起源與發明']},
 ];
-const VER='?v=20260911m';   // 換檔內容不換檔名時，用版本號避開快取
+const VER='?v=20260911n';   // 換檔內容不換檔名時，用版本號避開快取
 let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3'+VER;}), img:s.img+VER};});
 const HOLD=6;               // 每句最長秒數
 const imgs=[];              // 預載圖片
@@ -88,16 +88,17 @@ function resize(){dpr=Math.min(window.devicePixelRatio||1,2);const r=cv.getBound
  W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
 window.addEventListener('resize',resize);resize();
 
-function drawCover(im,zoom){
+function drawCover(im,zoom,ox,oy){
  ctx.clearRect(0,0,W,H);
  ctx.fillStyle='#f6efe0';ctx.fillRect(0,0,W,H);
  if(!im||!im.complete||!im.naturalWidth) return;
  const s=Math.max(W/im.naturalWidth,H/im.naturalHeight)*zoom;
  const w=im.naturalWidth*s,h=im.naturalHeight*s;
- ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h);
+ ctx.drawImage(im,(W-w)/2+(ox||0),(H-h)/2+(oy||0),w,h);
 }
 // ===== 畫面上的動態：閃燈 / 發光 / 掃光 =====
 const FX={
+ 1:{kenburns:1},          // 幕2：緩慢推近＋平移（無縫循環）
  3:{shine:1},
 };
 function drawFX(n,t){
@@ -111,7 +112,16 @@ function drawFX(n,t){
  }
 }
 function drawScene(n,t){
- drawCover(imgs[n], 1.0);   // 固定不縮放（不要一直靠近）
+ const fx=FX[n];
+ if(fx&&fx.kenburns){
+  // 以 sin/cos 同一相位計算 → 首尾相連、完美循環；一輪 16 秒
+  const T=16, ph=(t%T)/T*Math.PI*2;
+  const zoom=1.06+0.05*(1-Math.cos(ph));           // 1.06 → 1.16 → 1.06
+  const ox=Math.sin(ph)*W*0.014, oy=Math.cos(ph)*H*0.010;
+  drawCover(imgs[n], zoom, ox, oy);
+ } else {
+  drawCover(imgs[n], 1.0);   // 固定不縮放
+ }
  drawFX(n,t);
  // 底部漸層，讓字幕區更清楚
  const g=ctx.createLinearGradient(0,H*0.72,0,H);
