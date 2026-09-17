@@ -128,7 +128,7 @@ const SCENES=[
  {img:'img/m6.jpg',sub:['1930 年代','美國和歐洲開始做錫製跳跳箱','像是 1971 年美國的美泰 Mattel','1970 到 1980 年代','日本和台灣的工廠','做出好多好多','陶瓷吊腳小丑音樂盒','還有馬戲團旋轉小丑','它常唱的曲子','是《Jingle Bells》','馬戲團的《角鬥士進場》','還有最經典的《Pop Goes the Weasel》黃鼠狼跳出來！']},
  {img:'img/m7.jpg',sub:['從「會彈出東西的箱子」','到歐洲的自動人偶','再到瑞士的音樂盒','最後變成','會唱歌、會彈跳的小丑','它已經陪了大家','好幾百年囉！','這就是小丑音樂盒最早的起源與發明']},
 ];
-const VER='?v=20260917c';   // 換檔內容不換檔名時，用版本號避開快取
+const VER='?v=20260917d';   // 換檔內容不換檔名時，用版本號避開快取
 let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3'+VER;}), img:s.img+VER, img2:s.img2?s.img2+VER:null};});
 const HOLD=6;               // 每句最長秒數
 const imgs=[],imgs2=[];        // 預載圖片
