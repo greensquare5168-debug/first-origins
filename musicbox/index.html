@@ -30,6 +30,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .howrow{padding:0 16px 14px;background:#fffdf6}
 .howbtn{width:100%;background:#7cb342;border:none;color:#fff;font-family:inherit;font-size:15.5px;font-weight:bold;padding:11px 16px;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 #5c8f2c;transition:transform .1s}
 .howbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #5c8f2c}
+.howbtn.side{margin-top:10px;font-size:14.5px;padding:10px 8px;line-height:1.3}
+@media (max-width:720px){.howbtn.side{max-width:320px;margin:10px auto 0}}
 .credit{font-size:10.5px;color:#c0b6a3;margin-top:12px;line-height:1.7;text-align:center}
 .credit a{color:#b0a591}
 
@@ -75,6 +77,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <div id="layout">
   <aside id="sidebar">
     <div class="site">知識補給站<br>最早的起源與發明-小丑音樂盒</div>
+    <button class="howbtn side" onclick="howOpen()">🔧 它怎麼唱歌？</button>
     <a class="back" href="../">← 回最早的起源與發明</a>
   </aside>
   <main id="main">
@@ -90,7 +93,6 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
         <div class="seek"><div id="seekBar"></div></div>
         <div class="plabel" id="sceneLabel">1 / 7</div>
       </div>
-      <div class="howrow"><button class="howbtn" onclick="howOpen()">🔧 它怎麼唱歌？</button></div>
     </div>
     <p class="credit">插圖：本地 AI 生成（Stable Diffusion）· 旁白：edge-tts 曉臻語音</p>
   </main>
@@ -126,7 +128,7 @@ const SCENES=[
  {img:'img/m6.jpg',sub:['1930 年代','美國和歐洲開始做錫製跳跳箱','像是 1971 年美國的美泰 Mattel','1970 到 1980 年代','日本和台灣的工廠','做出好多好多','陶瓷吊腳小丑音樂盒','還有馬戲團旋轉小丑','它常唱的曲子','是《Jingle Bells》','馬戲團的《角鬥士進場》','還有最經典的《Pop Goes the Weasel》黃鼠狼跳出來！']},
  {img:'img/m7.jpg',sub:['從「會彈出東西的箱子」','到歐洲的自動人偶','再到瑞士的音樂盒','最後變成','會唱歌、會彈跳的小丑','它已經陪了大家','好幾百年囉！','這就是小丑音樂盒最早的起源與發明']},
 ];
-const VER='?v=20260917a';   // 換檔內容不換檔名時，用版本號避開快取
+const VER='?v=20260917b';   // 換檔內容不換檔名時，用版本號避開快取
 let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3'+VER;}), img:s.img+VER, img2:s.img2?s.img2+VER:null};});
 const HOLD=6;               // 每句最長秒數
 const imgs=[],imgs2=[];        // 預載圖片
