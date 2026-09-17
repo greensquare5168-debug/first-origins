@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>最早的起源與發明小站</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:#eaf3e0;min-height:100vh;color:#4a3b2a}
+#layout{display:flex;min-height:100vh;max-width:1100px;margin:0 auto}
+#sidebar{width:230px;min-width:230px;background:linear-gradient(180deg,#fdf8ec,#fefbf2);border-right:3px solid #e8dcbc;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+#sidebar .site{text-align:center;font-size:13px;color:#a0845a;font-weight:bold;margin-bottom:8px;line-height:1.4}
+#sidebar .back{display:block;text-align:center;font-size:12px;color:#b09a80;text-decoration:none;margin-top:auto;padding:8px}
+#main{flex:1;padding:18px 22px;min-width:0}
+h2{color:#c8860a;font-size:20px;margin-bottom:12px;padding-bottom:8px;border-bottom:3px dashed #f0d9b5}
+.player{background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(0,0,0,.12);overflow:hidden}
+.stage{position:relative;background:#f6efe0;aspect-ratio:16/9;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.dots{position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:5}
+.dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.6);box-shadow:0 0 3px rgba(0,0,0,.25);transition:all .2s;cursor:pointer}
+.dots i.on{background:#ffd98a;transform:scale(1.3)}
+.subtitle{background:#4a5a3a;color:#fff;padding:10px 18px;font-size:16.5px;line-height:1.6;text-align:center;letter-spacing:.5px;min-height:46px}
+.ctrl{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fffdf6}
+.ctrl button{background:#ffb347;border:none;color:#fff;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 3px 0 #d96f00;transition:transform .1s;flex:none}
+.ctrl button.navbtn{width:40px;height:40px;padding:0;font-size:17px;background:#ffcf8a;color:#a5682a;box-shadow:0 3px 0 #d9a45a}
+.ctrl button:active{transform:translateY(2px);box-shadow:0 1px 0 #d96f00}
+.ctrl .plabel{flex:none;font-size:13px;color:#8a6a4a;text-align:right;padding-left:10px;white-space:nowrap}
+.seek{flex:1;height:6px;background:#f0e2c8;border-radius:3px;overflow:hidden;cursor:pointer;touch-action:none}
+.seek div{height:100%;width:0%;background:linear-gradient(90deg,#ffb347,#ff8c1a);transition:width .2s}
+.howrow{padding:0 16px 14px;background:#fffdf6}
+.howbtn{width:100%;background:#7cb342;border:none;color:#fff;font-family:inherit;font-size:15.5px;font-weight:bold;padding:11px 16px;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 #5c8f2c;transition:transform .1s}
+.howbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #5c8f2c}
+.credit{font-size:10.5px;color:#c0b6a3;margin-top:12px;line-height:1.7;text-align:center}
+.credit a{color:#b0a591}
+
+/* ===== 工作原理解說 modal ===== */
+#howModal{position:fixed;inset:0;background:rgba(35,28,18,.78);z-index:99;display:none;align-items:center;justify-content:center;padding:16px}
+#howModal.open{display:flex}
+.hm-box{width:min(680px,100%);max-height:96vh;background:#fffdf6;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.hm-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#7cb342;color:#fff;font-size:16px;font-weight:bold;flex:none}
+.hm-head .pg{font-size:14px;background:rgba(255,255,255,.25);padding:4px 12px;border-radius:20px}
+.hm-wrap{padding:12px 16px 0;overflow-y:auto}
+.hm-cv{position:relative;width:100%;aspect-ratio:16/9;background:#f3ead8;border-radius:14px;overflow:hidden}
+.hm-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hm-dots{display:flex;justify-content:center;gap:7px;margin:10px 0 6px}
+.hm-dots i{width:9px;height:9px;border-radius:50%;background:#e0d3b8;cursor:pointer;transition:all .2s}
+.hm-dots i.on{background:#7cb342;transform:scale(1.35)}
+.hm-sub{background:#4a5a3a;color:#fff;border-radius:12px;padding:12px 16px;font-size:16.5px;line-height:1.6;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center}
+.hm-box.warn .hm-wrap{background:#FFF8E1}
+.hm-box.warn .hm-cv{background:#FFF1C9;border:3px solid #FFB347}
+.hm-box.warn .hm-sub{background:#a5682a}
+.hm-box.warn .hm-head{background:#FFB347}
+.hm-box.warn .hm-dots i.on{background:#e08a00}
+.hm-ctrl{display:flex;gap:8px;padding:12px 16px 10px;flex:none;flex-wrap:wrap}
+.hm-ctrl button{flex:1;min-width:104px;background:#ffcf8a;border:none;color:#8a5a1a;font-family:inherit;font-size:14.5px;font-weight:bold;padding:11px 8px;border-radius:12px;cursor:pointer;box-shadow:0 3px 0 #d9a45a}
+.hm-ctrl button.main{background:#ffb347;color:#fff;box-shadow:0 3px 0 #d96f00}
+.hm-ctrl button.close{background:#b8c4ce;color:#fff;box-shadow:0 3px 0 #8a98a3}
+.hm-ctrl button:active{transform:translateY(2px);box-shadow:none}
+.hm-warn{flex:none;text-align:center;font-size:12.5px;color:#b06a00;background:#FFF8E1;border-top:2px dashed #FFB347;padding:8px}
+@media (max-width:720px){
+ #layout{flex-direction:column}
+ #sidebar{width:100%;min-width:0;height:auto;position:static;border-right:none;border-bottom:3px solid #f0d9b5;padding:10px}
+ #main{padding:12px}
+ .subtitle{font-size:14px;padding:8px 12px;min-height:46px}
+ #howModal{padding:0}
+ .hm-box{width:100%;max-height:100vh;height:100vh;border-radius:0}
+ .hm-head{font-size:18px;padding:14px 16px}
+ .hm-sub{font-size:19px;line-height:1.65;min-height:96px}
+ .hm-ctrl button{font-size:16.5px;padding:14px 8px;min-width:0;flex:1 1 40%}
+ .hm-warn{font-size:14px;padding:10px}
+}
+</style>
+</head>
+<body>
+<div id="layout">
+  <aside id="sidebar">
+    <div class="site">知識補給站<br>最早的起源與發明-小丑音樂盒</div>
+    <a class="back" href="../">← 回最早的起源與發明</a>
+  </aside>
+  <main id="main">
+    <h2>小丑音樂盒的由來</h2>
+    <div class="player">
+      <div class="stage"><canvas id="cv"></canvas><div class="dots" id="dots"></div></div>
+      <div class="subtitle" id="sub">▶ 按播放，聽故事！</div>
+      <div class="ctrl">
+        <button class="navbtn" onclick="prevScene()">◀◀</button>
+        <button id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="navbtn" onclick="nextScene()">▶▶</button>
+        <button class="navbtn" onclick="restart()" style="background:#b8c4ce;box-shadow:0 3px 0 #8a98a3">↺</button>
+        <div class="seek"><div id="seekBar"></div></div>
+        <div class="plabel" id="sceneLabel">1 / 7</div>
+      </div>
+      <div class="howrow"><button class="howbtn" onclick="howOpen()">🔧 它怎麼唱歌？</button></div>
+    </div>
+    <p class="credit">插圖：本地 AI 生成（Stable Diffusion）· 旁白：edge-tts 曉臻語音</p>
+  </main>
+</div>
+
+<!-- ===== 工作原理解說 modal ===== -->
+<div id="howModal">
+  <div class="hm-box" id="hmBox">
+    <div class="hm-head"><span>🔧 它怎麼唱歌？</span><span class="pg" id="hmPage">1 / 8</span></div>
+    <div class="hm-wrap">
+      <div class="hm-cv"><canvas id="hcv"></canvas></div>
+      <div class="hm-dots" id="hmDots"></div>
+      <div class="hm-sub" id="hmSub">…</div>
+    </div>
+    <div class="hm-ctrl">
+      <button onclick="hmPrev()">◀ 上一頁</button>
+      <button class="main" id="hmReplay" onclick="hmReplay()">▶ 再聽一次</button>
+      <button onclick="hmNext()">下一頁 ▶</button>
+      <button class="close" onclick="howClose()">✕ 關閉</button>
+    </div>
+    <div class="hm-warn">⚠️ 把手只能順時針轉</div>
+  </div>
+</div>
+
+<script>
+// ===================== 主播放器（沿用「電腦」單元邏輯）=====================
+const SCENES=[
+ {img:'img/m1.jpg',sub:['哇！','嚇我一跳！','大家有見過這種玩具嗎？','只要搖動音樂盒把手','就會有音樂','轉到一定的點','裡面的小丑就會跳出來！','你們知道它是怎麼來的嗎？','關於這個問題','要從十六世紀說起']},
+ {img:'img/m2.jpg',sub:['其實在音樂盒之前','就已經有「會彈出東西的箱子」了','十六世紀的英國','就出現「Jack-in-the-box」這個名字','當時的 Jack','是指平民','也有一點「騙子」的意思','剛開始','箱子裡彈出來的是小惡魔','到了十八世紀','才慢慢變成','穿花衣服、戴面具的馬戲團小丑']},
+ {img:'img/m3.jpg',sub:['也是在那個時候的歐洲','很流行做「自動人偶」','工匠用齒輪做出會動的娃娃','會寫字','會畫圖','還會演奏樂器','後來有人想到','把音樂的心臟裝進去','這就是它最早的祖先']},
+ {img:'img/m4.jpg',sub:['1796 年','瑞士日內瓦有一位鐘錶匠','叫做安東・法夫爾','他做出了世界上第一個音樂盒','他用發條轉動金屬圓筒','圓筒上有一顆一顆小凸點','凸點撥動金屬梳齒','就唱出清脆的旋律！','這個設計就是音樂盒的心臟']},
+ {img:'img/m5.jpg',sub:['到了十九世紀','音樂盒開始大量製造','工匠把三樣東西裝在一起','手搖的發條','會彈跳的彈簧','還有小丑','於是就變成','轉動手柄會播音樂','音樂一結束','小丑就彈出來！','這才是今天的跳跳箱']},
+ {img:'img/m6.jpg',sub:['1930 年代','美國和歐洲開始做錫製跳跳箱','像是 1971 年美國的美泰 Mattel','1970 到 1980 年代','日本和台灣的工廠','做出好多好多','陶瓷吊腳小丑音樂盒','還有馬戲團旋轉小丑','它常唱的曲子','是《Jingle Bells》','馬戲團的《角鬥士進場》','還有最經典的《Pop Goes the Weasel》黃鼠狼跳出來！']},
+ {img:'img/m7.jpg',sub:['從「會彈出東西的箱子」','到歐洲的自動人偶','再到瑞士的音樂盒','最後變成','會唱歌、會彈跳的小丑','它已經陪了大家','好幾百年囉！','這就是小丑音樂盒最早的起源與發明']},
+];
+const VER='?v=20260917a';   // 換檔內容不換檔名時，用版本號避開快取
+let AUDIO=SCENES.map(function(s,n){return {sub:s.sub, vf:s.sub.map(function(_,i){return 'voice/o'+(n+1)+'_c'+(i+1)+'.mp3'+VER;}), img:s.img+VER, img2:s.img2?s.img2+VER:null};});
+const HOLD=6;               // 每句最長秒數
+const imgs=[],imgs2=[];        // 預載圖片
+AUDIO.forEach((s,i)=>{const im=new Image(); im.src=s.img; imgs[i]=im;
+ if(s.img2){const im2=new Image(); im2.src=s.img2; imgs2[i]=im2;}});
+const APOOL=[];               // 預載並保留 Audio 物件（不要丟棄，否則音檔被中止載入）
+AUDIO.forEach(s=>{APOOL.push((s.vf||[]).map(f=>{const a=new Audio();a.preload='auto';a.src=f;try{a.load();}catch(e){}return a;}));});
+let scene=0,playing=false,audio=null,sceneT0=0,sentIdx=0,sentT0=0;
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W,H,dpr;
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();
+ W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+window.addEventListener('resize',resize);resize();
+
+function drawCover(im,zoom,ox,oy){
+ ctx.clearRect(0,0,W,H);
+ ctx.fillStyle='#f6efe0';ctx.fillRect(0,0,W,H);
+ if(!im||!im.complete||!im.naturalWidth) return;
+ const s=Math.max(W/im.naturalWidth,H/im.naturalHeight)*zoom;
+ const w=im.naturalWidth*s,h=im.naturalHeight*s;
+ ctx.drawImage(im,(W-w)/2+(ox||0),(H-h)/2+(oy||0),w,h);
+}
+function drawScene(n,t){
+ // 插圖：緩慢推近＋平移（16 秒無縫循環）
+ const T=16, ph=(t%T)/T*Math.PI*2;
+ const zoom=1.05+0.045*(1-Math.cos(ph));
+ const ox=Math.sin(ph)*W*0.012, oy=Math.cos(ph)*H*0.009;
+ drawCover(imgs[n], zoom, ox, oy);
+ // 底部漸層，讓字幕區更清楚
+ const g=ctx.createLinearGradient(0,H*0.72,0,H);
+ g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.18)');
+ ctx.fillStyle=g;ctx.fillRect(0,H*0.72,W,H*0.28);
+}
+const dotsBox=document.getElementById('dots');
+AUDIO.forEach((_,i)=>{const d=document.createElement('i');d.title='第 '+(i+1)+' 幕';d.addEventListener('click',()=>playScene(i));dotsBox.appendChild(d);});
+
+function setScene(i){
+ scene=i;
+ document.querySelectorAll('#dots i').forEach((d,k)=>d.classList.toggle('on',k===i));
+ document.getElementById('sceneLabel').textContent=(i+1)+' / '+AUDIO.length;
+ document.getElementById('sub').textContent=(AUDIO[i].sub?AUDIO[i].sub[0]:'');
+ sceneT0=performance.now();
+}
+function stopAudio(){ if(audio){audio.pause();audio=null;} if(window._sentTimer){clearTimeout(window._sentTimer);window._sentTimer=null;} }
+function playScene(i){
+ setScene(i); stopAudio(); sentIdx=0; sentT0=performance.now();
+ const sents=AUDIO[i].sub||[], vfs=AUDIO[i].vf||[];
+ if(AUDIO[i+1]){ (APOOL[i+1]||[]).forEach(pa=>{ if(pa&&pa.readyState<2){ try{pa.load();}catch(e){} } }); }
+ function step(){
+  if(!playing) return;
+  sentT0=performance.now();
+  const myIdx=sentIdx;
+  const show=()=>{document.getElementById('sub').textContent=sents[myIdx]||'';};
+  const goNext=()=>{
+   if(sentIdx!==myIdx) return;
+   if(window._sentTimer){clearTimeout(window._sentTimer);window._sentTimer=null;}
+   if(audio){try{audio.onended=null;audio.pause();}catch(e){}}
+   sentIdx++;
+   if(sentIdx<sents.length){step();}
+   else if(scene<AUDIO.length-1){playScene(scene+1);}
+   else{playing=false;document.getElementById('playBtn').textContent='▶';}
+  };
+  if(vfs[myIdx]){
+   audio=(APOOL[scene]&&APOOL[scene][myIdx])||new Audio(vfs[myIdx]);
+   try{audio.currentTime=0;}catch(e){}
+   audio.onended=()=>{if(sentIdx===myIdx&&playing)goNext();};
+   const startTimer=()=>{window._sentTimer=setTimeout(()=>{if(sentIdx===myIdx&&playing)goNext();},HOLD*1000);};
+   audio.onplaying=startTimer;
+   const beginPlay=()=>{ if(sentIdx!==myIdx||!playing) return;
+     audio.play().then(()=>{show();if(audio&&!audio.paused)startTimer();})
+          .catch(()=>{show();window._sentTimer=setTimeout(goNext,3000);}); };
+   if(audio.readyState>=2){ beginPlay(); }
+   else{
+     show();   // 先顯示字幕，等音檔就緒才播
+     let kicked=false;
+     const kick=()=>{ if(kicked) return; kicked=true; beginPlay(); };
+     audio.addEventListener('canplay',kick,{once:true});
+     audio.addEventListener('loadeddata',kick,{once:true});
+     try{audio.load();}catch(e){}
+     setTimeout(kick,8000);
+   }
+  }else{ show(); window._sentTimer=setTimeout(goNext,4000); }
+  for(let pk=1;pk<=3;pk++){ const pa=APOOL[scene]&&APOOL[scene][myIdx+pk]; if(pa&&pa.readyState<2){ try{pa.load();}catch(e){} } }
+ }
+ step(); playing=true; document.getElementById('playBtn').textContent='⏸';
+}
+function togglePlay(){
+ if(playing){stopAudio();playing=false;document.getElementById('playBtn').textContent='▶';}
+ else{ if(audio&&audio.currentTime>0&&audio.duration&&audio.currentTime<audio.duration){audio.play();playing=true;document.getElementById('playBtn').textContent='⏸';}
+       else playScene(scene||0); }
+}
+function restart(){stopAudio();playScene(0);}
+function prevScene(){stopAudio();if(scene>0)playScene(scene-1);else{sceneT0=performance.now();playing=false;document.getElementById('playBtn').textContent='▶';document.getElementById('seekBar').style.width='0%';}}
+function nextScene(){stopAudio();if(scene<AUDIO.length-1)playScene(scene+1);}
+const seekEl=document.querySelector('.seek');
+seekEl.addEventListener('pointerdown',e=>{const r=seekEl.getBoundingClientRect();const ratio=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));playScene(Math.min(AUDIO.length-1,Math.max(0,Math.floor(ratio*AUDIO.length))));});
+
+function loop(){
+ requestAnimationFrame(loop);
+ if(playing){
+  const total=AUDIO.length,seg=1/total;
+  let p=scene/total;
+  const sc=AUDIO[scene]||{},nS=(sc.sub?sc.sub.length:1);
+  let inner;
+  if(audio&&audio.duration&&audio.duration>0){inner=(sentIdx+Math.min(1,audio.currentTime/audio.duration))/nS;}
+  else{inner=(sentIdx+Math.min(1,(performance.now()-sentT0)/1000/HOLD))/nS;}
+  p+=seg*Math.min(1,inner);
+  document.getElementById('seekBar').style.width=(p*100)+'%';
+ }
+ const t=(performance.now()-sceneT0)/1000;
+ drawScene(scene,t);
+}
+sceneT0=performance.now();
+requestAnimationFrame(loop);
+// 方便測試：?scene=2 直接跳到第2幕（不自動播音，只顯示畫面）
+(function(){try{const m=/[?&]scene=(\d+)/.exec(location.search); if(m){const k=Math.min(AUDIO.length-1,Math.max(0,parseInt(m[1],10)-1)); scene=k; setScene(k);} }catch(e){}})();
+
+// ===================== 工作原理：8 頁 =====================
+const HOWPAGES=[
+ {ttl:'發條',sub:['音樂盒的身體裡','藏著一個小小樂團喔！','轉動把手的時候','力氣就被捲進「發條」裡','像把力氣存起來一樣']},
+ {ttl:'傳動：齒輪或皮帶',sub:['發條慢慢放開','帶著一顆一顆「齒輪」轉','齒輪讓它轉得剛剛好','太快就不好聽啦','不過啊','不是每一款都一樣喔','有的跳跳箱用「齒輪」傳動','一個咬一個','很精準','有的用「皮帶」傳動','像橡皮筋一樣','繞在兩個輪子上面拉著轉','皮帶上面還有一顆顆凸點','一邊走一邊播音樂！','兩種都能讓音樂盒唱歌！']},
+ {ttl:'凸點就是樂譜：滾筒或皮帶',sub:['然後就是最好玩的地方了','負責播音樂的東西','通常是一個「滾筒」','滾筒上有一顆一顆小凸點','這些凸點','就是音樂盒的樂譜！','不過有的款式','用的不是滾筒','而是一條「皮帶」','皮帶上也是一顆一顆凸點','皮帶一直轉','凸點就一直撥過去','照樣能唱歌！','就像 1971 年的美泰小丑跳跳箱','用的就是皮帶喔']},
+ {ttl:'梳齒',sub:['凸點轉過去的時候','會撥動一排「金屬梳齒」','梳齒像鋼琴的琴鍵','被撥到就會震動','震動就變成聲音！']},
+ {ttl:'共鳴箱',sub:['聲音再經過木頭盒子','木頭盒子像音箱一樣','把小小的聲音放得好大']},
+ {ttl:'小丑為什麼會彈出來',sub:['最後','蓋子下面有一個「卡榫」把它卡住','彈簧一直想把小丑推出去','轉軸上還有一個小小的凸出物','音樂快到尾聲的時候','凸出物剛好把卡榫頂開','卡榫一鬆','彈簧就「咻」地把小丑推出來啦！','所以小丑','一定會在音樂結束的那一刻彈出來','這就是','音樂盒的工作原理']},
+ {ttl:'為什麼是這首曲子？',sub:['你一定聽過這首曲子','它叫做「Pop Goes the Weasel」','中文叫「黃鼠狼跳出來」','這是一首一百多年前的英國老歌','大約 1850 年代','它本來是跳舞的音樂','後來變成小朋友的兒歌','那為什麼跳跳箱都用這首呢？','因為這首歌','每一段的最後','都會突然「Pop！」一下','那個重重的拍子','剛好可以讓凸出物頂開卡榫','所以音樂的「Pop」','和小丑彈出來','是同時發生的！','而且這首歌很短','音也不多','很好刻在滾筒上','後來的玩具也都跟著用','所以一百多年來','大家就一直用它啦！']},
+ {ttl:'⚠️ 只能順時針轉！',sub:['對了','有一件事一定要提醒大家','轉把手的時候','一定要「順時針」轉','絕對不可以逆時針喔！','為什麼呢？','因為音樂盒的發條裡面','有一個小小的鉤子','它只勾得住一個方向','逆時針轉','鉤子就會鬆開','音樂盒就再也唱不出歌了','而且凸點撥梳齒','本來就是單向的設計','順著轉','凸點會滑過去、輕輕撥一下','逆著轉','凸點會直接撞上梳齒','梳齒很細很脆','一撞就可能斷掉','皮帶式的也一樣','逆轉皮帶會鬆掉、卡住','所以看到把手上的箭頭','順著箭頭轉就對了！','記住喔','只能順時針！']},
+];
+const HOW=[];
+for(let p=1;p<=8;p++){
+ HOW.push({sub:HOWPAGES[p-1].sub, vf:HOWPAGES[p-1].sub.map((_,m)=>'voice/how'+p+'_c'+(m+1)+'.mp3'+VER)});
+}
+const HPOOL=HOW.map(s=>s.vf.map(f=>{const a=new Audio();a.preload='auto';a.src=f;try{a.load();}catch(e){}return a;}));
+let hp=0,hsent=0,hplaying=false,haudio=null,htimer=null,hSentT0=0,hT0=0,hOpen=false;
+
+const modal=document.getElementById('howModal'),hmBox=document.getElementById('hmBox');
+const hcv=document.getElementById('hcv'),hctx=hcv.getContext('2d');
+let HW,HH,hdpr;
+function hResize(){const r=hcv.getBoundingClientRect();if(!r.width)return;
+ hdpr=Math.min(window.devicePixelRatio||1,2);HW=r.width;HH=r.height;
+ hcv.width=HW*hdpr;hcv.height=HH*hdpr;hctx.setTransform(hdpr,0,0,hdpr,0,0);}
+window.addEventListener('resize',hResize);
+const hdots=document.getElementById('hmDots');
+HOW.forEach((_,i)=>{const d=document.createElement('i');d.title='第 '+(i+1)+' 頁';d.addEventListener('click',()=>hmGo(i));hdots.appendChild(d);});
+
+function hmGo(p){
+ hp=p;hsent=0;
+ document.getElementById('hmPage').textContent=(p+1)+' / 8';
+ document.querySelectorAll('#hmDots i').forEach((d,k)=>d.classList.toggle('on',k===p));
+ hmBox.classList.toggle('warn',p===7);
+ document.getElementById('hmSub').textContent=HOW[p].sub[0]||'';
+ hT0=performance.now();
+ hmPlay();
+}
+function hmStop(){ if(haudio){try{haudio.onended=null;haudio.pause();}catch(e){}haudio=null;}
+ if(htimer){clearTimeout(htimer);htimer=null;} }
+function hmPlay(){
+ hmStop(); hplaying=true; hsent=0; hmBox.dataset.hs=0;
+ const sents=HOW[hp].sub, vfs=HOW[hp].vf;
+ function step(){
+  if(!hplaying||hp===undefined) return;
+  hSentT0=performance.now();
+  const myIdx=hsent; hmBox.dataset.hs=myIdx;
+  const show=()=>{document.getElementById('hmSub').textContent=sents[myIdx]||'';};
+  const goNext=()=>{
+   if(hsent!==myIdx) return;
+   if(htimer){clearTimeout(htimer);htimer=null;}
+   if(haudio){try{haudio.onended=null;haudio.pause();}catch(e){}}
+   hsent++;
+   if(hsent<sents.length){step();}
+   else{ hplaying=false;
+     if(hp<HOW.length-1){ setTimeout(()=>{if(hOpen&&!hplaying)hmGo(hp+1);},1200); } }
+  };
+  if(vfs[myIdx]){
+   haudio=HPOOL[hp][myIdx]||new Audio(vfs[myIdx]);
+   try{haudio.currentTime=0;}catch(e){}
+   haudio.onended=()=>{if(hsent===myIdx&&hplaying)goNext();};
+   const startTimer=()=>{htimer=setTimeout(()=>{if(hsent===myIdx&&hplaying)goNext();},HOLD*1000);};
+   haudio.onplaying=startTimer;
+   const beginPlay=()=>{ if(hsent!==myIdx||!hplaying) return;
+     haudio.play().then(()=>{show();if(haudio&&!haudio.paused)startTimer();})
+           .catch(()=>{show();htimer=setTimeout(goNext,3000);}); };
+   if(haudio.readyState>=2){ beginPlay(); }
+   else{
+     show(); let kicked=false;
+     const kick=()=>{ if(kicked) return; kicked=true; beginPlay(); };
+     haudio.addEventListener('canplay',kick,{once:true});
+     haudio.addEventListener('loadeddata',kick,{once:true});
+     try{haudio.load();}catch(e){}
+     setTimeout(kick,8000);
+   }
+  }else{ show(); htimer=setTimeout(goNext,4000); }
+  for(let k=1;k<=3;k++){const pa=HPOOL[hp][myIdx+k];if(pa&&pa.readyState<2){try{pa.load();}catch(e){}}}
+ }
+ step();
+}
+function howOpen(){ hOpen=true; modal.classList.add('open'); hResize(); hmGo(0); }
+function howClose(){ hOpen=false; hplaying=false; hmStop(); modal.classList.remove('open'); }
+function hmPrev(){ hmStop(); hplaying=false; hmGo(Math.max(0,hp-1)); }
+function hmNext(){ hmStop(); hplaying=false; hmGo(Math.min(7,hp+1)); }
+function hmReplay(){ hmPlay(); }
+// 點背景關閉
+modal.addEventListener('click',e=>{ if(e.target===modal) howClose(); });
+document.addEventListener('keydown',e=>{ if(!hOpen)return;
+ if(e.key==='Escape')howClose(); if(e.key==='ArrowRight')hmNext(); if(e.key==='ArrowLeft')hmPrev(); });
+
+// ---------- 小動畫（canvas 程式繪製，不用圖）----------
+function gear(x,y,r,teeth,ang,col,hub){
+ hctx.save();hctx.translate(x,y);hctx.rotate(ang);
+ hctx.fillStyle=col;
+ for(let i=0;i<teeth;i++){hctx.save();hctx.rotate(i*2*Math.PI/teeth);
+   hctx.beginPath();hctx.rect(-r*0.085,-r,r*0.17,r*0.28);hctx.fill();hctx.restore();}
+ hctx.beginPath();hctx.arc(0,0,r*0.85,0,7);hctx.fill();
+ hctx.fillStyle=hub||'#f3ead8';
+ hctx.beginPath();hctx.arc(0,0,r*0.22,0,7);hctx.fill();
+ hctx.restore();
+}
+function spiral(cx,cy,r0,turns,tight){
+ hctx.beginPath();
+ const steps=turns*60;
+ for(let i=0;i<=steps;i++){
+  const f=i/steps, a=f*turns*Math.PI*2, r=r0*(0.12+0.88*f)*(1-(1-tight)*0.35*(1-f));
+  const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+  i?hctx.lineTo(x,y):hctx.moveTo(x,y);
+ }
+ hctx.stroke();
+}
+function box(x,y,w,h,fill,stroke){
+ hctx.fillStyle=fill;hctx.strokeStyle=stroke;hctx.lineWidth=3;
+ hctx.beginPath();hctx.roundRect?hctx.roundRect(x,y,w,h,10):hctx.rect(x,y,w,h);
+ hctx.fill();hctx.stroke();
+}
+function drawHow(){
+ requestAnimationFrame(drawHow);
+ if(!hOpen||!HW) return;
+ const p=hp, t=(performance.now()-hT0)/1000;
+ const si=parseInt(hmBox.dataset.hs||'0',10);   // 目前句索引（讓動畫跟句子走）
+ hctx.clearRect(0,0,HW,HH);
+ const g=hctx.createLinearGradient(0,0,0,HH);
+ g.addColorStop(0,'#fbf3e2');g.addColorStop(1,'#efe2c8');
+ hctx.fillStyle=g;hctx.fillRect(0,0,HW,HH);
+ const U=HW/480;   // 以 480x270 為設計基準縮放
+ hctx.save();hctx.scale(U,U);
+ const CW=480,CH=270;
+ const cx=CW/2,cy=CH/2;
+ hctx.lineCap='round';
+ if(p===0){ // ① 發條捲緊
+  const ph=(t%6)/6;
+  hctx.strokeStyle='#b07a2c';hctx.lineWidth=5;
+  spiral(200,cy,86,4+ph*2,ph);
+  // 把手
+  hctx.save();hctx.translate(200,cy);hctx.rotate(-t*1.6);
+  hctx.strokeStyle='#8a5a2a';hctx.lineWidth=6;
+  hctx.beginPath();hctx.moveTo(-34,0);hctx.lineTo(34,0);hctx.stroke();
+  hctx.fillStyle='#c8964a';hctx.beginPath();hctx.arc(0,0,9,0,7);hctx.fill();
+  hctx.restore();
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 13px sans-serif';hctx.textAlign='center';
+  hctx.fillText('把手轉 → 力氣捲進發條',200,244);
+  // 右側積蓄能量的條
+  box(320,90,110,90,'#fff7e6','#dcc9a0');
+  hctx.fillStyle='#ffb347';hctx.fillRect(330,150-100*ph,90,10+100*ph);
+  hctx.fillStyle='#a5824a';hctx.font='bold 12px sans-serif';
+  hctx.fillText('能量',375,78);
+ } else if(p===1){ // ② 齒輪 / 皮帶
+  if(si<9){
+   hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+   hctx.fillText('齒輪傳動：一個咬一個',cx,30);
+   const a=(si*0.9)+t*1.4;
+   gear(190,cy,58,14,a,'#c9a05c');
+   gear(288,cy-30,36,10,-a*58/36,'#b58b48');
+   gear(288,cy+46,26,9,-a*58/26,'#d0ac6e');
+   hctx.fillStyle='#7a6340';hctx.font='bold 12px sans-serif';
+   hctx.fillText('精準、速度剛剛好',cx,252);
+  } else {
+   hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+   hctx.fillText('皮帶傳動：繞在兩個輪子上',cx,30);
+   const w1={x:150,y:cy-6,r:34},w2={x:330,y:cy-6,r:34};
+   hctx.strokeStyle='#a8823c';hctx.lineWidth=5;
+   hctx.beginPath();hctx.moveTo(w1.x,w1.y-w1.r);hctx.lineTo(w2.x,w2.y-w2.r);
+   hctx.moveTo(w1.x,w1.y+w1.r);hctx.lineTo(w2.x,w2.y+w2.r);hctx.stroke();
+   hctx.strokeStyle='#7a5a24';hctx.lineWidth=4;
+   [w1,w2].forEach(w=>{hctx.beginPath();hctx.arc(w.x,w.y,w.r,0,7);hctx.stroke();
+     hctx.beginPath();hctx.arc(w.x,w.y,6,0,7);hctx.stroke();});
+   hctx.fillStyle='#c8861a';
+   for(let i=0;i<12;i++){const f=((i/12)+t*0.22)%1;const x=w1.x+(w2.x-w1.x)*f;
+     hctx.beginPath();hctx.arc(x,(i%2?w1.y-w1.r:w1.y+w1.r),3.2,0,7);hctx.fill();}
+   hctx.fillStyle='#7a6340';hctx.font='bold 12px sans-serif';
+   hctx.fillText('上面還有凸點，一邊走一邊播音樂',cx,252);
+  }
+ } else if(p===2){ // ③ 凸點＝樂譜
+  if(si<7){
+   hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+   hctx.fillText('滾筒：凸點就是樂譜',cx,30);
+   const dx=150,dy=cy-10,dw=190,dh=78;
+   hctx.fillStyle='#cbb27e';hctx.fillRect(dx,dy,dw,dh);
+   hctx.fillStyle='#b89b63';hctx.beginPath();hctx.ellipse(dx,dy+dh/2,16,dh/2,0,0,7);hctx.fill();
+   hctx.fillStyle='#d8c193';hctx.beginPath();hctx.ellipse(dx+dw,dy+dh/2,16,dh/2,0,0,7);hctx.fill();
+   hctx.fillStyle='#8a6a2a';
+   for(let i=0;i<40;i++){const x=dx+((i*17+t*40)%dw);const y=dy+12+((i*13)%(dh-22));
+     hctx.beginPath();hctx.arc(x,y,2.6,0,7);hctx.fill();}
+   hctx.fillStyle='#e8a520';
+   for(let i=0;i<9;i++){const x=dx+((i*23+t*40)%dw);
+     hctx.beginPath();hctx.arc(x,dy+dh-8,3.6,0,7);hctx.fill();}
+   hctx.fillStyle='#7a6340';hctx.font='bold 12px sans-serif';
+   hctx.fillText('轉到哪顆凸點，就唱哪個音',cx,252);
+  } else {
+   hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+   hctx.fillText('皮帶：凸點就在皮帶上（1971 美泰）',cx,30);
+   hctx.strokeStyle='#a8823c';hctx.lineWidth=5;
+   hctx.beginPath();hctx.moveTo(70,cy-30);hctx.lineTo(410,cy-30);
+   hctx.moveTo(70,cy+30);hctx.lineTo(410,cy+30);hctx.stroke();
+   hctx.fillStyle='#c8861a';
+   for(let i=0;i<26;i++){const f=((i/26)+t*0.25)%1;const x=70+340*f;
+     hctx.beginPath();hctx.arc(x,(i%2?cy-30:cy+30),3.2,0,7);hctx.fill();}
+   hctx.fillStyle='#8a6a2a';
+   for(let i=0;i<10;i++){const x=70+((i*38+t*85)%340);
+     hctx.beginPath();hctx.arc(x,cy,3.4,0,7);hctx.fill();}
+   hctx.fillStyle='#7a6340';hctx.font='bold 12px sans-serif';
+   hctx.fillText('皮帶一直轉，凸點一直撥過去',cx,252);
+  }
+ } else if(p===3){ // ④ 梳齒
+  const n=11, base=cy+34, w=(CW-160)/n;
+  const pluck=(si*1.0+t*3.2);
+  for(let i=0;i<n;i++){
+   const x=80+i*w, len=42+((i*37)%26), amp=Math.max(0,Math.sin(pluck-i*0.55));
+   hctx.save();hctx.translate(x,base);hctx.rotate(-amp*0.14);
+   hctx.strokeStyle=amp>0.4?'#ffb347':'#9a8451';hctx.lineWidth=3.4;
+   hctx.beginPath();hctx.moveTo(0,0);hctx.lineTo(0,-len);hctx.stroke();
+   hctx.fillStyle='#7a5a24';hctx.beginPath();hctx.arc(0,0,4,0,7);hctx.fill();
+   hctx.restore();
+   if(amp>0.55){
+    hctx.strokeStyle='rgba(255,180,60,'+amp*0.75+')';hctx.lineWidth=2;
+    for(let k=1;k<=3;k++){hctx.beginPath();hctx.arc(x,base-len,k*11*amp,Math.PI*1.15,Math.PI*1.85);hctx.stroke();}
+   }
+  }
+  hctx.strokeStyle='#8a6a2a';hctx.lineWidth=4;hctx.beginPath();hctx.moveTo(60,base+8);hctx.lineTo(CW-60,base+8);hctx.stroke();
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+  hctx.fillText('像鋼琴琴鍵：被撥到就震動 → 變成聲音',cx,base+34);
+ } else if(p===4){ // ⑤ 共鳴箱
+  box(120,cy-46,240,110,'#e8d3a8','#b98b45');
+  hctx.fillStyle='#f6efe0';hctx.font='bold 13px sans-serif';hctx.textAlign='center';
+  hctx.fillText('木頭盒子＝音箱',cx,cy+6);
+  const ph=(t%3)/3;
+  for(let k=1;k<=4;k++){
+   const f=((ph+k/4)%1);
+   hctx.strokeStyle='rgba(200,134,26,'+(1-f)*0.85+')';hctx.lineWidth=3;
+   hctx.beginPath();hctx.arc(80,cy,14+f*130,0,7);hctx.stroke();
+   hctx.beginPath();hctx.arc(400,cy,14+f*130,0,7);hctx.stroke();
+  }
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';
+  hctx.fillText('小小的聲音 → 放得好大',cx,CH-18);
+ } else if(p===5){ // ⑥ 卡榫 → 小丑彈出
+  const ph=(t%5)/5;
+  const open=ph>0.62;
+  const pop=open?Math.min(1,(ph-0.62)/0.12):0;
+  box(150,cy-30,180,110,'#e8d3a8','#b98b45');   // 木盒
+  hctx.save();
+  if(open){ // 小丑
+   const yy=-pop*70+Math.sin(t*22)*pop*4;
+   hctx.save();hctx.translate(cx,cy-30+yy);
+   hctx.fillStyle='#f2f2f2';hctx.beginPath();hctx.arc(0,-30,15,0,7);hctx.fill(); // 頭
+   hctx.fillStyle='#e04b4b';hctx.beginPath();hctx.arc(0,-30,15,Math.PI,0);hctx.fill(); // 帽
+   hctx.fillStyle='#e04b4b';hctx.beginPath();hctx.moveTo(-13,4);hctx.lineTo(13,4);hctx.lineTo(22,30);hctx.lineTo(-22,30);hctx.closePath();hctx.fill();
+   hctx.fillStyle='#333';hctx.beginPath();hctx.arc(-5,-32,2,0,7);hctx.arc(5,-32,2,0,7);hctx.fill();
+   hctx.restore();
+  }
+  hctx.restore();
+  // 卡榫
+  const latchA=open?0.55:0;
+  hctx.save();hctx.translate(150,cy-30);hctx.rotate(latchA);
+  hctx.fillStyle='#8a8f96';hctx.fillRect(-6,0,58,9);hctx.restore();
+  // 轉軸凸出物
+  const cam=(t*1.6)%(Math.PI*2);
+  hctx.save();hctx.translate(120,cy-30);hctx.rotate(cam);
+  hctx.fillStyle='#c8964a';hctx.beginPath();hctx.moveTo(0,0);hctx.lineTo(22,0);hctx.lineTo(22,9);hctx.lineTo(0,9);hctx.closePath();hctx.fill();
+  hctx.beginPath();hctx.arc(0,0,8,0,7);hctx.fill();hctx.restore();
+  // 彈簧
+  hctx.strokeStyle='#9a8451';hctx.lineWidth=3.4;hctx.beginPath();
+  for(let i=0;i<=40;i++){const x=250+i*2.6, y=cy+40+Math.sin(i*0.7)*8*(1-pop);i?hctx.lineTo(x,y):hctx.moveTo(x,y);}
+  hctx.stroke();
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';hctx.textAlign='center';
+  hctx.fillText(open?'卡榫鬆開 → 彈簧「咻」地把小丑推出來！':'凸出物慢慢轉向卡榫…（彈簧一直被壓著）',cx,CH-16);
+ } else if(p===6){ // ⑦ 樂譜捲動 → Pop！
+  const y0=56,sp=34;
+  for(let i=0;i<4;i++){hctx.strokeStyle='#d9c7a2';hctx.lineWidth=1.6;
+   hctx.beginPath();hctx.moveTo(0,y0+sp+i*10);hctx.lineTo(CW,y0+sp+i*10);hctx.stroke();}
+  const beat=2.6, pos=(t%(beat*7))/(beat*7);
+  const alignX=372;
+  hctx.fillStyle='#e8d3a8';hctx.fillRect(0,y0,360,sp+30);
+  for(let i=0;i<9;i++){
+   const x=360-((i*46)-t*70)%460; if(x<-20||x>360) continue;
+   hctx.fillStyle='#6b5a3a';hctx.beginPath();hctx.ellipse(x,y0+sp+(i%3)*10,7,5,-0.3,0,7);hctx.fill();
+   hctx.fillRect(x+6,y0+sp+(i%3)*10-24,2.4,24);
+  }
+  hctx.strokeStyle='#e04b4b';hctx.lineWidth=3;
+  hctx.beginPath();hctx.moveTo(alignX,20);hctx.lineTo(alignX,CH-40);hctx.stroke();
+  hctx.fillStyle='#e04b4b';hctx.font='bold 15px sans-serif';hctx.textAlign='center';
+  hctx.fillText('Pop!',alignX,18);
+  const on=((t%(beat*2))<0.42);
+  hctx.fillStyle='#a5824a';hctx.font='bold 18px sans-serif';
+  hctx.fillText(on?'Pop！':'',424,70);
+  // 小丑盒
+  box(392,CH-96,88,54,'#e8d3a8','#b98b45');
+  if(on){
+   hctx.save();hctx.translate(436,CH-96-Math.abs(Math.sin(t*20))*34);
+   hctx.fillStyle='#e04b4b';hctx.beginPath();hctx.arc(0,-14,11,Math.PI,0);hctx.fill();
+   hctx.fillStyle='#f4e6c8';hctx.beginPath();hctx.arc(0,-4,11,0,7);hctx.fill();
+   hctx.fillStyle='#333';hctx.beginPath();hctx.arc(-4,-6,2,0,7);hctx.arc(4,-6,2,0,7);hctx.fill();
+   hctx.restore();
+  }
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 12px sans-serif';
+  hctx.fillText('音樂的「Pop」和小丑彈出來，是同時發生的！',200,CH-16);
+ } else { // ⑧ 只能順時針
+  hctx.fillStyle='#8a6a4a';hctx.font='bold 13px sans-serif';hctx.textAlign='center';
+  hctx.fillText('把手只能順時針轉',cx,26);
+  // 綠色順時針 ✓
+  hctx.save();hctx.translate(140,cy+6);
+  hctx.strokeStyle='#3fa34d';hctx.lineWidth=7;
+  hctx.beginPath();hctx.arc(0,0,58,-Math.PI*0.55,Math.PI*1.05);hctx.stroke();
+  hctx.fillStyle='#3fa34d';
+  hctx.save();hctx.rotate(Math.PI*1.05);hctx.beginPath();
+  hctx.moveTo(50,-11);hctx.lineTo(72,0);hctx.lineTo(50,11);hctx.closePath();hctx.fill();hctx.restore();
+  hctx.fillStyle='#2e7d32';hctx.font='bold 30px sans-serif';
+  hctx.fillText('✓',0,-2);
+  hctx.font='bold 12px sans-serif';hctx.fillText('順時針：鉤子咬得住、凸點輕撥',0,92);
+  hctx.restore();
+  // 紅色逆時針 ✗
+  hctx.save();hctx.translate(340,cy+6);
+  hctx.strokeStyle='#d9453f';hctx.lineWidth=7;
+  hctx.beginPath();hctx.arc(0,0,58,Math.PI*1.55,Math.PI*0.05,true);hctx.stroke();
+  hctx.fillStyle='#d9453f';
+  hctx.save();hctx.rotate(Math.PI*0.05);hctx.beginPath();
+  hctx.moveTo(-50,11);hctx.lineTo(-72,0);hctx.lineTo(-50,-11);hctx.closePath();hctx.fill();hctx.restore();
+  hctx.font='bold 30px sans-serif';hctx.fillText('✗',0,-2);
+  hctx.font='bold 12px sans-serif';hctx.fillText('逆時針：鉤子鬆脫、梳齒被撞斷',0,92);
+  hctx.restore();
+  // 斷齒小圖
+  hctx.fillStyle='#c0392b';hctx.font='bold 11px sans-serif';
+  hctx.fillText('✗ 梳齒很細很脆，一撞就可能斷掉',cx,CH-14);
+ }
+ hctx.restore();
+}
+requestAnimationFrame(drawHow);
+setInterval(hResize,1500);
+</script>
+</body>
+</html>
