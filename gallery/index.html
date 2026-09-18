@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知識補給站｜圖片備份圖庫</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:linear-gradient(160deg,#fff6e8,#eaf6e0);min-height:100vh;color:#4a3b2a}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 60px}
+h1{font-size:22px;color:#5a8a3a;text-align:center;margin-bottom:6px}
+.lead{text-align:center;font-size:13.5px;color:#8a7a63;line-height:1.7;margin-bottom:16px}
+.bar{position:sticky;top:0;z-index:9;background:#fffdf6ee;backdrop-filter:blur(4px);border:2px solid #f0e6d2;border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.bar button{font-family:inherit;font-size:14px;font-weight:bold;border:none;border-radius:22px;padding:10px 16px;cursor:pointer;background:#7cb342;color:#fff;box-shadow:0 3px 0 #5c8f2c}
+.bar button.grey{background:#b8c4ce;box-shadow:0 3px 0 #8a98a3}
+.bar button:active{transform:translateY(2px);box-shadow:none}
+.cnt{font-size:14px;font-weight:bold;color:#5a8a3a;padding:0 6px}
+h2{font-size:16px;color:#c8860a;margin:22px 0 10px;padding-bottom:6px;border-bottom:3px dashed #f0d9b5}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:#fff;border:3px solid #f0e6d2;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.13)}
+.card.sel{border-color:#7cb342;box-shadow:0 0 0 3px #cdebb1}
+.card .pic{aspect-ratio:16/9;background:#faf5e8;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.card .nm{font-size:11.5px;line-height:1.5;padding:7px 9px;color:#6b5a45;word-break:break-all;background:#fffdf6}
+.card .tick{position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #e2d6bd;display:flex;align-items:center;justify-content:center;font-size:15px;color:transparent}
+.card.sel .tick{background:#7cb342;border-color:#5c8f2c;color:#fff}
+.card .big{position:absolute;top:8px;right:8px;background:#ffffffd9;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;text-decoration:none}
+.out{margin-top:18px;background:#fff;border:2px solid #f0e6d2;border-radius:16px;padding:12px}
+.out textarea{width:100%;min-height:88px;font-family:monospace;font-size:12.5px;border:1px solid #e8dcc4;border-radius:10px;padding:8px;background:#fffdf6;color:#4a3b2a}
+.tip{font-size:12.5px;color:#a0895f;margin-top:8px;line-height:1.7}
+.back{display:block;text-align:center;margin-top:26px;font-size:13.5px;color:#8a7a63;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>知識補給站｜圖片備份圖庫</h1>
+  <p class="lead">這是我手上留下的備份圖（共 <b id="total">0</b> 張）。<br>
+  點圖片＝選取（打勾），選好按下面「📋 複製我選的檔名」貼給我，我就知道你挑哪些。<br>
+  按右上角 🔍 可以看大圖。</p>
+
+  <div class="bar">
+    <span class="cnt" id="cnt">已選 0 張</span>
+    <button onclick="selectAll(true)">全選</button>
+    <button class="grey" onclick="selectAll(false)">清除</button>
+    <button onclick="copyList()">📋 複製我選的檔名</button>
+  </div>
+
+  <div id="groups"></div>
+
+  <div class="out">
+    <textarea id="out" readonly placeholder="選好之後按「複製我選的檔名」，這裡會出現清單"></textarea>
+    <div class="tip">⚠️ 網路上找到的參考圖（別人的作品）故意沒有放進來，避免版權問題。</div>
+  </div>
+
+  <a class="back" href="../musicbox/">← 回小丑音樂盒</a>
+</div>
+
+<script>
+const IMGS=[
+ "cover_camel.jpg","cover_giraffe.jpg","cover_koala.jpg","cover_origin.jpg","giraffe_photo_scene0.jpg",
+ "自然知識_banner候選1.jpg","自然風景_banner候選2.jpg",
+ "最早的發明_inv1.jpg","最早的發明_inv2.jpg","最早的發明_inv3.jpg","最早的發明_inv4.jpg",
+ "最早的發明_底片裡的燈泡.jpg","最早的發明_復古底片風.jpg","最早的發明_復古底片風_中格.jpg",
+ "最早的發明_復古底片風_寬.jpg","最早的發明_復古底片風_置中.jpg","最早的發明_復古底片風_置中2.jpg",
+ "最早的發明_復古底片風_置中3.jpg","最早的發明_橫式_直底片.jpg","最早的發明_橫式_直條底片.jpg",
+ "最早的發明_燈泡底片.jpg","最早的發明_燈泡底片_一條.jpg","最早的發明_直式_底片燈泡.jpg",
+ "最早的發明_直式_底片燈泡_寬.jpg","最早的起源和發明_origin1.jpg","最早的起源和發明_origin2.jpg",
+ "幕3_圖片_巴比奇+分析機.jpg","幕6_圖片_晶片誕生+基爾比.jpg"
+];
+const VER='?v=20260918';
+const sel=new Set();
+function isNature(f){return /^cover_|^giraffe_|^自然/.test(f);}
+function groupOf(f){ return isNature(f) ? '自然／動物類' : '起源與發明・電腦類'; }
+const groups={};
+IMGS.forEach(f=>{(groups[groupOf(f)]=groups[groupOf(f)]||[]).push(f);});
+document.getElementById('total').textContent=IMGS.length;
+const box=document.getElementById('groups');
+Object.keys(groups).forEach(g=>{
+  const h=document.createElement('h2');h.textContent=g+'（'+groups[g].length+'）';box.appendChild(h);
+  const grid=document.createElement('div');grid.className='grid';box.appendChild(grid);
+  groups[g].forEach(f=>{
+    const c=document.createElement('div');c.className='card';c.dataset.f=f;
+    const p=document.createElement('div');p.className='pic';
+    const im=document.createElement('img');im.loading='lazy';im.src='img/'+encodeURIComponent(f)+VER;im.alt=f;
+    p.appendChild(im);
+    const t=document.createElement('div');t.className='tick';t.textContent='✓';
+    const a=document.createElement('a');a.className='big';a.textContent='🔍';a.target='_blank';a.href='img/'+encodeURIComponent(f);a.addEventListener('click',e=>e.stopPropagation());
+    const n=document.createElement('div');n.className='nm';n.textContent=f;
+    c.appendChild(p);c.appendChild(t);c.appendChild(a);c.appendChild(n);
+    c.addEventListener('click',()=>{ sel.has(f)?sel.delete(f):sel.add(f); c.classList.toggle('sel',sel.has(f)); upd(); });
+    grid.appendChild(c);
+  });
+});
+function upd(){ document.getElementById('cnt').textContent='已選 '+sel.size+' 張'; }
+function selectAll(on){ document.querySelectorAll('.card').forEach(c=>{
+  if(on) sel.add(c.dataset.f); else sel.delete(c.dataset.f);
+  c.classList.toggle('sel',on); }); upd(); }
+function copyList(){
+  const list=IMGS.filter(f=>sel.has(f));
+  const txt=(list.length?list:[ '（還沒選）' ]).join('\n');
+  document.getElementById('out').value=txt;
+  const done=()=>{ const b=document.querySelector('.bar button:last-child'); const t=b.textContent; b.textContent='✅ 已複製'; setTimeout(()=>b.textContent=t,1200); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
+  else { const ta=document.getElementById('out'); ta.select(); try{document.execCommand('copy');}catch(e){} done(); }
+}
+upd();
+</script>
+</body>
+</html>
