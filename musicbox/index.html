@@ -35,36 +35,17 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .credit{font-size:10.5px;color:#c0b6a3;margin-top:12px;line-height:1.7;text-align:center}
 .credit a{color:#b0a591}
 
-/* ===== 運作原理（頁內區塊，不彈窗） ===== */
-#how{margin-top:22px;background:#fff;border-radius:20px;box-shadow:0 6px 24px rgba(0,0,0,.12);padding:18px 18px 20px}
-#how h2{margin-bottom:6px}
-#how .howlead{font-size:13.5px;color:#9a8a70;margin:0 0 14px}
-.howgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-.hcard{grid-column:span 4;position:relative;background:#fffdf6;border:2px solid #f0e6d2;border-radius:16px;padding:10px 12px 12px}
-.hcard:nth-child(n+4){grid-column:span 3}
-.hcard .hpic{background:#faf5e8;border-radius:11px;overflow:hidden;margin-bottom:8px}
-.hcard .hpic svg{display:block;width:100%;height:auto}
-.hcard .hn{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;background:#ffb347;color:#fff;font-size:12.5px;font-weight:bold;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 #d96f00}
-.hcard .hc{font-size:13.5px;line-height:1.7;color:#5b4a34}
-.hcard .hc b{color:#c8860a}
-.hcard.warn{background:#FFF8E1;border-color:#FFB347}
-.hcard.warn .hc b{color:#b06a00}
-.hcard.warn .hn{background:#e08a00;box-shadow:0 2px 0 #a5682a}
-.hcard.wide{grid-column:span 12;display:flex;gap:16px;align-items:center}
-.hcard.wide .hc{font-size:14px}
-.hcard.wide .hpic{flex:none;width:190px;margin:0}
-@media (max-width:900px){
- .hcard,.hcard:nth-child(n+4){grid-column:span 6}
- .hcard.wide{grid-column:span 12;display:block}
- .hcard.wide .hpic{width:100%}
-}
+/* ===== 分區標題 / 跳轉按鈕 ===== */
+.secH{margin-top:26px}
+.jumprow{margin:14px 0 0}
+.jumpbtn{display:inline-block;background:#7cb342;color:#fff;text-decoration:none;font-size:14.5px;font-weight:bold;padding:11px 22px;border-radius:26px;box-shadow:0 3px 0 #5c8f2c}
+.jumpbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #5c8f2c}
+.player{margin-top:14px}
 @media (max-width:720px){
  #layout{flex-direction:column}
  #sidebar{width:100%;min-width:0;height:auto;position:static;border-right:none;border-bottom:3px solid #f0d9b5;padding:10px}
  #main{padding:12px}
  .subtitle{font-size:14px;padding:8px 12px;min-height:46px}
- .hcard,.hcard:nth-child(n+4),.hcard.wide{grid-column:span 12}
- .hcard .hc{font-size:14.5px}
 }
 </style>
 </head>
@@ -73,6 +54,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   <aside id="sidebar">
     <div class="site">知識補給站<br>最早的起源與發明-小丑音樂盒</div>
     <a class="howbtn side" href="#how" style="display:block;text-align:center;text-decoration:none">🔧 它怎麼唱歌？</a>
+    <a class="howbtn side" href="#why" style="display:block;text-align:center;text-decoration:none">🎵 為什麼是這首曲子？</a>
     <a class="back" href="../">← 回最早的起源與發明</a>
   </aside>
   <main id="main">
@@ -90,39 +72,33 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
       </div>
     </div>
     <!-- ===== 運作原理（頁內區塊，不彈窗；圖為自繪 SVG 線條插畫）===== -->
-    <section id="how">
-      <h2>運作原理</h2>
-      <p class="howlead">轉動把手之後，音樂盒裡面到底發生什麼事？</p>
-      <div class="howgrid">
-      <div class="hcard"><span class="hn">1</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="轉動把手"><g fill="none" stroke="#8a7a63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="38" y="38" width="96" height="56" rx="7" fill="#fdf8ec"/><line x1="54" y1="66" x2="134" y2="66"/><path d="M134 66h18V46"/></g><circle cx="152" cy="46" r="7" fill="#ffd98a" stroke="#8a7a63" stroke-width="2.4"/><path d="M152 68a22 22 0 0 1 22-22" fill="none" stroke="#3fa34d" stroke-width="3.4" stroke-linecap="round"/><path d="M174 36l-1 13 12-4z" fill="#3fa34d"/><text x="196" y="30" font-size="13" font-weight="bold" fill="#3fa34d">✓</text></svg></div>
-        <div class="hc">使用者<b>順時針</b>轉動把手，帶動整根桿子朝同一個方向旋轉</div></div>
-      <div class="hcard"><span class="hn">2</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="螺紋帶動齒輪"><line x1="22" y1="30" x2="198" y2="30" stroke="#8a7a63" stroke-width="10" stroke-linecap="round"/><g stroke="#fffdf6" stroke-width="2.6" stroke-linecap="round"><line x1="38" y1="23" x2="28" y2="37"/><line x1="60" y1="23" x2="50" y2="37"/><line x1="82" y1="23" x2="72" y2="37"/><line x1="104" y1="23" x2="94" y2="37"/><line x1="126" y1="23" x2="116" y2="37"/><line x1="148" y1="23" x2="138" y2="37"/><line x1="170" y1="23" x2="160" y2="37"/><line x1="192" y1="23" x2="182" y2="37"/></g><line x1="110" y1="37" x2="110" y2="58" stroke="#8a7a63" stroke-width="2.2" stroke-dasharray="4 4"/><circle cx="110" cy="84" r="23" fill="#fdf1d8" stroke="#c9a05c" stroke-width="9" stroke-dasharray="6 7"/><circle cx="110" cy="84" r="12" fill="none" stroke="#c9a05c" stroke-width="2.4"/><circle cx="110" cy="84" r="3.5" fill="#c9a05c"/><path d="M99 75a15 15 0 1 1 13 19" fill="none" stroke="#3fa34d" stroke-width="3.2" stroke-linecap="round"/><path d="M112 94l-11 1 5-10z" fill="#3fa34d"/></svg></div>
-        <div class="hc">桿子上的<b>螺紋</b>帶動下面的齒輪旋轉</div></div>
-      <div class="hcard"><span class="hn">3</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="圓筒旋轉播音樂"><rect x="26" y="46" width="116" height="46" rx="10" fill="#f3e6c8" stroke="#b98b45" stroke-width="2.4"/><ellipse cx="142" cy="69" rx="9" ry="23" fill="#f7edd6" stroke="#b98b45" stroke-width="2.4"/><g fill="#8a6a2a"><circle cx="44" cy="58" r="2.4"/><circle cx="60" cy="70" r="2.4"/><circle cx="76" cy="56" r="2.4"/><circle cx="92" cy="72" r="2.4"/><circle cx="108" cy="58" r="2.4"/><circle cx="124" cy="70" r="2.4"/><circle cx="52" cy="82" r="2.4"/><circle cx="84" cy="84" r="2.4"/><circle cx="116" cy="84" r="2.4"/></g><rect x="150" y="63" width="32" height="12" rx="3" fill="#c8964a" stroke="#8a7a63" stroke-width="2"/><circle cx="152" cy="69" r="7" fill="#dbb372" stroke="#8a7a63" stroke-width="2"/><path d="M40 34a34 34 0 0 1 46-18" fill="none" stroke="#3fa34d" stroke-width="3.2" stroke-linecap="round"/><path d="M86 16l-13 2 6 11z" fill="#3fa34d"/><text x="190" y="42" font-size="24" fill="#c8860a">♪</text><text x="176" y="82" font-size="17" fill="#c8860a">♫</text></svg></div>
-        <div class="hc"><b>主圓筒</b>和尖尖的凸出物一起旋轉，同時播放音樂</div></div>
-      <div class="hcard"><span class="hn">4</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="凸出物抬起卡榫"><rect x="12" y="46" width="94" height="46" rx="9" fill="#f3e6c8" stroke="#b98b45" stroke-width="2.4"/><line x1="106" y1="69" x2="172" y2="69" stroke="#c8964a" stroke-width="8" stroke-linecap="round"/><circle cx="110" cy="69" r="9" fill="#dbb372" stroke="#8a7a63" stroke-width="2"/><rect x="172" y="24" width="11" height="64" rx="4" fill="#9aa0a8" stroke="#6f767e" stroke-width="2" transform="rotate(-13 177 56)"/><circle cx="177" cy="88" r="4.5" fill="#6f767e"/><path d="M200 96V76" stroke="#3b82f6" stroke-width="3.4" stroke-linecap="round"/><path d="M194 80l6-13 6 13z" fill="#3b82f6"/></svg></div>
-        <div class="hc">凸出物轉過去，輕輕<b>把卡榫的底部抬起來</b></div></div>
-      <div class="hcard"><span class="hn">5</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="彈簧被壓縮"><rect x="146" y="18" width="13" height="88" rx="5" fill="#9aa0a8" stroke="#6f767e" stroke-width="2"/><rect x="96" y="30" width="8" height="64" rx="3" fill="#c9bda6" stroke="#a99b83" stroke-width="2"/><path d="M104 44l34 7-34 7 34 7-34 7 34 7" fill="none" stroke="#9a8451" stroke-width="3" stroke-linejoin="round"/><path d="M74 62h20" stroke="#3fa34d" stroke-width="3.4" stroke-linecap="round"/><path d="M96 55l14 7-14 7z" fill="#3fa34d"/></svg></div>
-        <div class="hc">卡榫上方的<b>彈簧被壓縮</b></div></div>
-      <div class="hcard"><span class="hn">6</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="卡榫頂端往外移動"><circle cx="150" cy="100" r="5" fill="#6f767e"/><rect x="145" y="18" width="12" height="84" rx="4" fill="#9aa0a8" stroke="#6f767e" stroke-width="2" transform="rotate(13 150 100)"/><path d="M170 34h30" stroke="#3b82f6" stroke-width="3.4" stroke-linecap="round"/><path d="M188 28l13 6-13 6z" fill="#3b82f6"/><path d="M56 100h60" stroke="#d9c7a2" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round"/></svg></div>
-        <div class="hc">卡榫的<b>頂端往外移動</b></div></div>
-      <div class="hcard"><span class="hn">7</span>
-        <div class="hpic"><svg viewBox="0 0 220 124" role="img" aria-label="蓋子彈開小丑跳出"><rect x="58" y="62" width="102" height="46" rx="7" fill="#f3e6c8" stroke="#b98b45" stroke-width="2.4"/><line x1="54" y1="62" x2="164" y2="62" stroke="#b98b45" stroke-width="3.4" stroke-linecap="round"/><line x1="58" y1="62" x2="34" y2="34" stroke="#b98b45" stroke-width="5" stroke-linecap="round"/><circle cx="110" cy="32" r="11" fill="#fdf1d8" stroke="#8a7a63" stroke-width="2.2"/><path d="M99 25l11-17 11 17z" fill="#e04b4b"/><path d="M100 43h20l8 15h-36z" fill="#e04b4b"/><g fill="#5b4a34"><circle cx="106" cy="31" r="1.7"/><circle cx="114" cy="31" r="1.7"/></g><path d="M124 84l12 8-12 8 12 8" fill="none" stroke="#9a8451" stroke-width="3" stroke-linejoin="round"/><path d="M186 84V56" stroke="#ff8c1a" stroke-width="3.4" stroke-linecap="round"/><path d="M179 62l7-14 7 14z" fill="#ff8c1a"/></svg></div>
-        <div class="hc">蓋子被裡面彈簧的張力<b>彈開</b>，小丑跳出來！</div></div>
-      <div class="hcard wide"><span class="hn"></span>
-        <div class="hpic"><svg viewBox="0 0 220 90" role="img" aria-label="Pop Goes the Weasel"><g stroke="#d9c7a2" stroke-width="1.6"><line x1="8" y1="28" x2="212" y2="28"/><line x1="8" y1="38" x2="212" y2="38"/><line x1="8" y1="48" x2="212" y2="48"/><line x1="8" y1="58" x2="212" y2="58"/><line x1="8" y1="68" x2="212" y2="68"/></g><g fill="#6b5a3a"><circle cx="56" cy="68" r="7"/><rect x="61" y="40" width="2.6" height="28"/><circle cx="96" cy="58" r="7"/><rect x="101" y="30" width="2.6" height="28"/></g><g fill="#e04b4b"><circle cx="146" cy="48" r="7"/><rect x="151" y="20" width="2.6" height="28"/><path d="M154 20q16 4 14 18" fill="none" stroke="#e04b4b" stroke-width="2.6"/></g><text x="146" y="14" font-size="14" font-weight="bold" fill="#e04b4b" text-anchor="middle">Pop!</text></svg></div>
-        <div class="hc"><b>為什麼每一台都唱這首？</b>它叫《Pop Goes the Weasel》（黃鼠狼跳出來），是一百多年前的英國老歌，每段最後都有一個重重的「Pop!」——那個拍子剛好能頂開卡榫，所以音樂和小丑彈出是同時發生的；而且它很短、音又不多，很好刻在滾筒上。</div></div>
-      <div class="hcard wide warn"><span class="hn">⚠️</span>
-        <div class="hpic"><svg viewBox="0 0 220 90" role="img" aria-label="只能順時針轉"><path d="M60 72a25 25 0 1 1 25-25" fill="none" stroke="#3fa34d" stroke-width="6" stroke-linecap="round"/><path d="M85 34l-6 14h12z" fill="#3fa34d"/><text x="60" y="52" font-size="26" font-weight="bold" fill="#3fa34d" text-anchor="middle">✓</text><path d="M160 18a25 25 0 0 0-25 25" fill="none" stroke="#d9453f" stroke-width="6" stroke-linecap="round"/><path d="M135 56l-6-14h12z" fill="#d9453f"/><text x="160" y="52" font-size="26" font-weight="bold" fill="#d9453f" text-anchor="middle">✗</text></svg></div>
-        <div class="hc"><b>只能順時針轉！</b>逆時針會讓發條裡的鉤子鬆脫（以後就唱不出歌），凸點也會正面撞上細細的梳齒，一撞就可能斷掉。看到把手上的箭頭，順著箭頭轉就對了！</div></div>
+    <h2 class="secH" id="how">運作原理</h2>
+      <div class="player" id="howP">
+        <div class="stage"><canvas></canvas><div class="dots"></div></div>
+        <div class="subtitle">▶ 按播放</div>
+        <div class="ctrl">
+          <button class="navbtn prev">◀◀</button>
+          <button class="playbtn">▶</button>
+          <button class="navbtn nextb">▶▶</button>
+          <button class="navbtn restartb" style="background:#b8c4ce;box-shadow:0 3px 0 #8a98a3">↺</button>
+          <div class="seek"><div></div></div>
+          <div class="plabel">1 / 7</div>
+        </div>
       </div>
-    </section>
+    <div class="jumprow"><a class="jumpbtn" href="#why">🎵 為什麼是這首曲子？</a></div>
+    <h2 class="secH" id="why">為什麼是這首曲子？</h2>
+      <div class="player" id="whyP">
+        <div class="stage"><canvas></canvas><div class="dots"></div></div>
+        <div class="subtitle">▶ 按播放</div>
+        <div class="ctrl">
+          <button class="navbtn prev">◀◀</button>
+          <button class="playbtn">▶</button>
+          <button class="navbtn nextb">▶▶</button>
+          <button class="navbtn restartb" style="background:#b8c4ce;box-shadow:0 3px 0 #8a98a3">↺</button>
+          <div class="seek"><div></div></div>
+          <div class="plabel">1 / 2</div>
+        </div>
+      </div>
     <p class="credit">插圖：本地 AI 生成（Stable Diffusion）· 旁白：edge-tts 曉臻語音</p>
   </main>
 </div>
@@ -257,6 +233,123 @@ requestAnimationFrame(loop);
 // 方便測試：?scene=2 直接跳到第2幕（不自動播音，只顯示畫面）
 (function(){try{const m=/[?&]scene=(\d+)/.exec(location.search); if(m){const k=Math.min(AUDIO.length-1,Math.max(0,parseInt(m[1],10)-1)); scene=k; setScene(k);} }catch(e){}})();
 
+// ===================== 運作原理／為什麼是這首曲子：播放器 =====================
+const HOWPAGES=[
+ {ttl:'發條',sub:['音樂盒的身體裡','藏著一個小小樂團喔！','轉動把手的時候','力氣就被捲進「發條」裡','像把力氣存起來一樣']},
+ {ttl:'傳動：齒輪或皮帶',sub:['發條慢慢放開','帶著一顆一顆「齒輪」轉','齒輪讓它轉得剛剛好','太快就不好聽啦','不過啊','不是每一款都一樣喔','有的跳跳箱用「齒輪」傳動','一個咬一個','很精準','有的用「皮帶」傳動','像橡皮筋一樣','繞在兩個輪子上面拉著轉','皮帶上面還有一顆顆凸點','一邊走一邊播音樂！','兩種都能讓音樂盒唱歌！']},
+ {ttl:'凸點就是樂譜：滾筒或皮帶',sub:['然後就是最好玩的地方了','負責播音樂的東西','通常是一個「滾筒」','滾筒上有一顆一顆小凸點','這些凸點','就是音樂盒的樂譜！','不過有的款式','用的不是滾筒','而是一條「皮帶」','皮帶上也是一顆一顆凸點','皮帶一直轉','凸點就一直撥過去','照樣能唱歌！','就像 1971 年的美泰小丑跳跳箱','用的就是皮帶喔']},
+ {ttl:'梳齒',sub:['凸點轉過去的時候','會撥動一排「金屬梳齒」','梳齒像鋼琴的琴鍵','被撥到就會震動','震動就變成聲音！']},
+ {ttl:'共鳴箱',sub:['聲音再經過木頭盒子','木頭盒子像音箱一樣','把小小的聲音放得好大']},
+ {ttl:'小丑為什麼會彈出來',sub:['最後','蓋子下面有一個「卡榫」把它卡住','彈簧一直想把小丑推出去','轉軸上還有一個小小的凸出物','音樂快到尾聲的時候','凸出物剛好把卡榫頂開','卡榫一鬆','彈簧就「咻」地把小丑推出來啦！','所以小丑','一定會在音樂結束的那一刻彈出來','這就是','音樂盒的工作原理']},
+ {ttl:'為什麼是這首曲子？',sub:['你一定聽過這首曲子','它叫做「Pop Goes the Weasel」','中文叫「黃鼠狼跳出來」','這是一首一百多年前的英國老歌','大約 1850 年代','它本來是跳舞的音樂','後來變成小朋友的兒歌','那為什麼跳跳箱都用這首呢？','因為這首歌','每一段的最後','都會突然「Pop！」一下','那個重重的拍子','剛好可以讓凸出物頂開卡榫','所以音樂的「Pop」','和小丑彈出來','是同時發生的！','而且這首歌很短','音也不多','很好刻在滾筒上','後來的玩具也都跟著用','所以一百多年來','大家就一直用它啦！']},
+ {ttl:'⚠️ 只能順時針轉！',sub:['對了','有一件事一定要提醒大家','轉把手的時候','一定要「順時針」轉','絕對不可以逆時針喔！','為什麼呢？','因為音樂盒的發條裡面','有一個小小的鉤子','它只勾得住一個方向','逆時針轉','鉤子就會鬆開','音樂盒就再也唱不出歌了','而且凸點撥梳齒','本來就是單向的設計','順著轉','凸點會滑過去、輕輕撥一下','逆著轉','凸點會直接撞上梳齒','梳齒很細很脆','一撞就可能斷掉','皮帶式的也一樣','逆轉皮帶會鬆掉、卡住','所以看到把手上的箭頭','順著箭頭轉就對了！','記住喔','只能順時針！']},
+];
+const VERH='?v=20260918';
+const HOLDH=6;
+function mk(pageIdx, img, vfn, from, to){
+ const all=HOWPAGES[pageIdx].sub, f=from||0, t=(to===undefined?all.length:to);
+ return {img:img, sub:all.slice(f,t), vf:all.slice(f,t).map((_,i)=>'voice/'+vfn+'_c'+(f+i+1)+'.mp3'+VERH)};
+}
+const HOW2=[                                   // 運作原理 7 幕（跳過第7頁『曲子』）
+ mk(0,'img/how1.jpg','how1'),
+ mk(1,'img/how2.jpg','how2'),
+ mk(2,'img/how3.jpg','how3'),
+ mk(3,'img/how4.jpg','how4'),
+ mk(4,'img/how5.jpg','how5'),
+ mk(5,'img/how6.jpg','how6'),
+ mk(7,'img/how8.jpg','how8')
+];
+const HOW3=[                                   // 為什麼是這首曲子 2 幕
+ mk(6,'img/howq1.jpg','how7',0,7),
+ mk(6,'img/howq2.jpg','how7',7)
+];
+
+function newPlayer(pid,SCENES){
+ const root=document.getElementById(pid); if(!root) return;
+ const cv=root.querySelector('canvas'), ctx=cv.getContext('2d');
+ const subEl=root.querySelector('.subtitle'), dotsBox=root.querySelector('.dots');
+ const barEl=root.querySelector('.seek div'), lblEl=root.querySelector('.plabel');
+ const playBtn=root.querySelector('.playbtn');
+ let W=0,H=0,dpr=1;
+ const imgs=SCENES.map(s=>{const im=new Image(); im.src=s.img; return im;});
+ const POOL=SCENES.map(s=>s.sub.map((_,i)=>{const a=new Audio();a.preload='auto';a.src=s.vf[i];try{a.load();}catch(e){}return a;}));
+ let scene=0,idx=0,playing=false,audio=null,timer=null,t0=performance.now(),sentT0=performance.now();
+ function resize(){const r=cv.getBoundingClientRect(); if(!r.width) return;
+   dpr=Math.min(window.devicePixelRatio||1,2);W=r.width;H=r.height;
+   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+ window.addEventListener('resize',resize);resize();
+ SCENES.forEach((_,i)=>{const d=document.createElement('i');d.title='第 '+(i+1)+' 幕';
+   d.addEventListener('click',()=>{stopA();playing=false;playBtn.textContent='▶';go(i);});dotsBox.appendChild(d);});
+ lblEl.textContent='1 / '+SCENES.length;
+ function draw(n,t){
+   if(!W) return;
+   ctx.clearRect(0,0,W,H);ctx.fillStyle='#f6efe0';ctx.fillRect(0,0,W,H);
+   const im=imgs[n]; if(!im||!im.complete||!im.naturalWidth) return;
+   const T=16,ph=(t%T)/T*Math.PI*2,zoom=1.04+0.05*(1-Math.cos(ph));
+   const s=Math.max(W/im.naturalWidth,H/im.naturalHeight)*zoom,w=im.naturalWidth*s,h=im.naturalHeight*s;
+   ctx.drawImage(im,(W-w)/2+Math.sin(ph)*W*0.012,(H-h)/2+Math.cos(ph)*H*0.009,w,h);
+   const g=ctx.createLinearGradient(0,H*0.72,0,H);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.18)');
+   ctx.fillStyle=g;ctx.fillRect(0,H*0.72,W,H*0.28);
+ }
+ function loop(){requestAnimationFrame(loop);draw(scene,(performance.now()-t0)/1000);
+   if(playing){const seg=1/SCENES.length,n=SCENES[scene].sub.length;let inner;
+     if(audio&&audio.duration>0) inner=(idx+Math.min(1,audio.currentTime/audio.duration))/n;
+     else inner=(idx+Math.min(1,(performance.now()-sentT0)/1000/HOLDH))/n;
+     barEl.style.width=((scene*seg+seg*Math.min(1,inner))*100)+'%';}}
+ requestAnimationFrame(loop);
+ function stopA(){if(audio){try{audio.onended=null;audio.pause();}catch(e){}audio=null;}
+   if(timer){clearTimeout(timer);timer=null;}}
+ function show(){subEl.textContent=SCENES[scene].sub[idx]||'';}
+ function go(n){scene=n;idx=0;t0=performance.now();
+   dotsBox.querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===n));
+   lblEl.textContent=(n+1)+' / '+SCENES.length;show();}
+ function play(n){
+   if(typeof n==='number'&&n!==scene) go(n);
+   stopA();playing=true;playBtn.textContent='⏸';
+   const sents=SCENES[scene].sub, vfs=SCENES[scene].vf;
+   (function step(){
+     if(!playing) return;
+     sentT0=performance.now();
+     const my=idx; show();
+     const next=()=>{ if(idx!==my||!playing) return;
+       if(timer){clearTimeout(timer);timer=null;}
+       if(audio){try{audio.onended=null;audio.pause();}catch(e){}}
+       idx++;
+       if(idx<sents.length) step();
+       else if(scene<SCENES.length-1){go(scene+1);step();}
+       else{playing=false;playBtn.textContent='▶';} };
+     if(vfs[my]){
+       audio=POOL[scene][my]||new Audio(vfs[my]);
+       try{audio.currentTime=0;}catch(e){}
+       audio.onended=()=>{if(idx===my&&playing)next();};
+       const begin=()=>{ if(idx!==my||!playing) return;
+         audio.play().then(()=>{if(audio&&!audio.paused)timer=setTimeout(()=>{if(idx===my&&playing)next();},HOLDH*1000);})
+              .catch(()=>{timer=setTimeout(next,3000);}); };
+       if(audio.readyState>=2) begin();
+       else{ let k=false; const kick=()=>{ if(k) return; k=true; begin(); };
+         audio.addEventListener('canplay',kick,{once:true});
+         audio.addEventListener('loadeddata',kick,{once:true});
+         try{audio.load();}catch(e){} setTimeout(kick,8000); }
+     } else { timer=setTimeout(next,4000); }
+     for(let p=1;p<=3;p++){const pa=POOL[scene][my+p];if(pa&&pa.readyState<2){try{pa.load();}catch(e){}}}
+   })();
+ }
+ playBtn.addEventListener('click',()=>{
+   if(playing){stopA();playing=false;playBtn.textContent='▶';}
+   else{ if(audio&&audio.currentTime>0&&audio.duration&&audio.currentTime<audio.duration){
+           audio.play();playing=true;playBtn.textContent='⏸'; }
+         else play(scene); } });
+ root.querySelector('.prev').addEventListener('click',()=>{stopA();playing=false;playBtn.textContent='▶';if(scene>0)go(scene-1);});
+ root.querySelector('.nextb').addEventListener('click',()=>{stopA();playing=false;playBtn.textContent='▶';if(scene<SCENES.length-1)go(scene+1);});
+ root.querySelector('.restartb').addEventListener('click',()=>{stopA();go(0);play(0);});
+ const seekEl=root.querySelector('.seek');
+ seekEl.addEventListener('pointerdown',e=>{const r=seekEl.getBoundingClientRect();
+   const ratio=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
+   const n=Math.min(SCENES.length-1,Math.max(0,Math.floor(ratio*SCENES.length)));
+   stopA();playing=false;playBtn.textContent='▶';go(n);});
+}
+newPlayer('howP',HOW2);
+newPlayer('whyP',HOW3);
 </script>
 </body>
 </html>
